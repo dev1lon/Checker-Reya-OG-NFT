@@ -26,24 +26,23 @@ async def checker(address, proxy, semaphore):
             'user-agent': UserAgent().random
         }
 
-
-        for attempt in range(0, 3):
-            try:
-                async with aiohttp.ClientSession(connector=connector) as session:
-                    async with session.get(url=f'https://api.reya.xyz/api/sbt/mint-status/owner/{address}/tokenCount/0', headers=headers) as response:
-                        data = await response.json()
-                        if data['isEligible'] == True:
-                            eligible = 'Eligible'
-                            if data['hasMinted'] == True:
-                                minted = 'NFT alredy minted'
+        async with aiohttp.ClientSession(connector=connector) as session:
+            for attempt in range(0, 3):
+                try:
+                        async with session.get(url=f'https://api.reya.xyz/api/sbt/mint-status/owner/{address}/tokenCount/0', headers=headers) as response:
+                            data = await response.json()
+                            if data['isEligible'] == True:
+                                eligible = 'Eligible'
+                                if data['hasMinted'] == True:
+                                    minted = 'NFT alredy minted'
+                                else:
+                                    minted = 'Can mint'
+                                logger.success(f"{address} | {eligible} | {minted}")
                             else:
-                                minted = 'Can mint'
-                            logger.success(f"{address} | {eligible} | {minted}")
-                        else:
-                            eligible = 'Not eligible'
-                            logger.success(f"{address} | {eligible}")
-                        await asyncio.sleep(1)
-                        return
+                                eligible = 'Not eligible'
+                                logger.success(f"{address} | {eligible}")
+                            await asyncio.sleep(1)
+                            return
 
-            except Exception as err:
-                logger.warning(f'{address} | {err} |  Retry')
+                except Exception as err:
+                    logger.warning(f'{address} | {err} |  Retry')

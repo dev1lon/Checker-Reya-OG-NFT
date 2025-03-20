@@ -11,3 +11,5 @@
 ```pip install requirements.txt```
 
 ```python main.py```
+
+TG channel: https://t.me/strange_move
